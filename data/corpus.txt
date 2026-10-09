@@ -1,0 +1,58 @@
+SUYOG KARKI
+PROFILE Data Science Intern Candidate  | ML & Analytics  	 	 	 	Kathmandu  	 	github.com/suyogkarki1 	 	suyogkarki1.com.np 
+EDUCATION Data Science student experienced in building end-to-end machine learning projects using Python, SQL, and Scikit-learn covering data cleaning, EDA, feature engineering, statistical testing, preprocessing pipeline, crossvalidation, hyperparameter tuning, and model evaluation. Applied this across projects in weather forecasting, customer churn, and healthcare risk. I'm genuinely curious about AI and machine learning, and I want to keep getting better at it — looking for a data science/ML or analytics internship to learn and grow.
+Higher Secondary Education (+2) - Science, 
+Kathmandu Model College (KMC), Bagbazar GPA: 3.35 / 4.0	2020 – 2022
+Bachelor of Science in Information Technology (BSIT) - Data Science, 	2023 – 2027
+Kings College, Kathmandu (Affiliated with Westcliff University, California)
+Currently in 4th Year  GPA: 3.54 / 4.0
+TECHNICAL SKILLS Languages :  Python · SQL	Data Analysis : Pandas · NumPy · Excel
+Data Visualization:  Matplotlib · Seaborn · Power 	Tools: Git & GitHub BI
+Currently Learning: Neural Networks · Deep 
+Machine Learning : Scikit-learn · PyTorch	Learning · Computer Vision 
+PROJECTS Chini — Diabetes Risk Predictor for Women
+       Python · Pandas · NumPy · Matplotlib · Seaborn · Scikit-learn · SciPy · Streamlit · Docker
+       GitHub: https://github.com/suyogkarki1/diabetes_pipeline.git  
+       Live: https://chinisugar.streamlit.app/  
+  Built a diabetes risk predictor for adult women•	 on the Pima Indians dataset (768 records), using a scikitlearn pipeline that fills in missing values and scales features, so it works even with incomplete patient data.
+  Ran •	Welch's t-tests comparing diabetic vs non-diabetic patients, using the t-statistic and p-value (α = 0.05) to judge significance and Cohen's d for effect size, to find which measurements best separate the two groups.
+  Compared five models with 5-fold cross-validation and tuned each with GridSearchCV (including•	 
+L1/L2/ElasticNet regularization for Logistic Regression), keeping all preprocessing inside the folds to prevent data leakage.
+  Chose•	 Logistic Regression and scored on PR-AUC instead of accuracy because the data is imbalanced, reaching 0.81 ROC-AUC, 73% accuracy, and 0.72 recall on the test set.
+  Deployed it as an interactive Streamlit web app, containerized with Docker for easy setup.•
+Kathmandu Rain Prediction
+       Python · Pandas · NumPy · Scikit-learn · Matplotlib · Seaborn · Streamlit 
+       GitHub: https://github.com/suyogkarki1/Rain-Prediction-    Live: https://barshamausam.streamlit.app/  
+  Sourced a 10-year Kathmandu weather dataset (2015–2025, 3,468 records) from Kaggle, and performed data•	 cleaning, unit conversion, and feature engineering across 14 meteorological variables for supervised classification.
+  Built and evaluated four classification models Logistic Regression, Decision Tree, K-Nearest Neighbors, and•	 Random Forest  using stratified 6-fold cross-validation; selected Random Forest as the final model, achieving 84% accuracy and 0.90 ROC-AUC on held-out test data.
+  Conducted feature importance analysis identifying •	humidity, temperature, and cloud cover as the strongest rainfall predictors, validating the model against real-world Kathmandu Valley monsoon patterns.
+  Applied •	bootstrap resampling to estimate 2026 monthly rain probabilities with lower and upper uncertainty bounds, and developed a separate SARIMA seasonal time-series model to forecast monthly rainy-day percentages for comparison.
+  Deployed the trained model as an interactive Streamlit web application •	(SkyCast) enabling real-time rain classification from user-defined weather inputs and visualizing seasonal forecast trends.
+Customer Churn Prediction
+        Python · Pandas · Scikit-learn · Matplotlib · Seaborn
+       GitHub : https://github.com/suyogkarki1/customer-churn-prediction  
+  Analyzed a Kaggle dataset of 10,000 European bank customers to identify behavioral patterns linked to•	 churn, including credit score, account balance, and product usage habits.
+  Engineered new features including •	BalancePerProduct and AgeGroup; conducted full EDA to uncover class imbalance and key churn indicators before applying preprocessing steps.
+  Achieved •	86.35% accuracy and 0.87 ROC-AUC using Gradient Boosting Classifier, selected after benchmarking against simpler models including Logistic Regression and Decision Tree.
+  Feature importance analysis revealed •	Age and NumOfProducts as the strongest churn predictors — suggesting retention teams should prioritize older single-product customers as the highest risk segment
+Smart Healthcare and Lifestyle Prediction
+        Python · Pandas · Scikit-learn · Matplotlib · Seaborn
+       GitHub : https://github.com/suyogkarki1/Smart-Healthcare-and-Lifestyle-Prediction  
+  Worked with a Kaggle healthcare dataset of•	 5,000 patient records with clinical indicators like blood pressure, cholesterol, BMI, smoking habits, and chest pain severity.
+  Ran a full pipeline data cleaning, EDA, feature analysis, model training, and evaluation using a •	stratified train/test split to keep the class balance the same, and compared several models before choosing Logistic Regression.
+  The data was •	imbalanced, so I used class_weight='balanced' and looked at PR-AUC and recall, not just accuracy, since accuracy can be misleading on imbalanced data.
+  Got 99.4% accuracy and 0.999 ROC-AUC, but I didn't fully trust these numbers — scores this high usually•	 mean the data is cleanly separated or synthetic, not real-world skill. I used cross-validation to check there was no data leakage in my pipeline..
+UAE ID Card Number Extraction Pipeline
+        Python · YOLOv11 (Ultralytics) · OpenCV · Tesseract OCR · PostgreSQL
+        Github: https://github.com/suyogkarki1/object_detection.git  
+  Annotated a custom dataset of 424 UAE ID card images on Ultralytics HUB, labeling the ID-number field as a•	 dedicated detection class, split into 405 train / 10 validation / 9 test images.
+  Trained and deployed a custom YOLOv11 model via Ultralytics' hosted endpoint, achieving •	99.5% mAP50 and 95.0% recall on ID-number localization.
+  Built an OCR pipeline (OpenCV preprocessing + Tesseract) to extract and clean detected ID numbers via•	 regex, then persisted records to PostgreSQL with conflict-safe deduplication.
+QR Code Validator Using Finite Automata
+Python · Graphviz · Deterministic Finite Automata
+Github: https://github.com/suyogkarki1/qr-code-authentication.git  
+  Built a system that validates QR code data using a Deterministic Finite Automaton (DFA), checking the•	 bitstream structure step by step and accepting or rejecting based on whether it reaches a valid end state.
+  Parsed and extracted structured information from valid codes, handling two formats bank payment QRs•	 (account name, number, type) and WiFi QRs (SSID, password).
+Generated DFA state diagrams with Graphviz to visualize the validation flow.•
+Applied theory-of-computation concepts (finite automata) to a practical data-validation problem•
+LANGUAGES Nepali	Englis Native	Fluent

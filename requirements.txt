@@ -1,0 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.2
+nltk>=3.8
+numpy>=1.26
+pandas>=2.0
+flask>=3.0
+ipykernel>=6.29
