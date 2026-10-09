@@ -1,21 +1,25 @@
+import json
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 
 from nextword.model import Predictor
 
-CHECKPOINT = Path(__file__).parent / 'artifacts' / 'lstm_next_word.pt'
+ROOT = Path(__file__).parent
+CHECKPOINT = ROOT / 'artifacts' / 'lstm_next_word.pt'
+METRICS = ROOT / 'reports' / 'metrics.json'
 
 if not CHECKPOINT.exists():
     raise SystemExit('No trained model found. Run `python train.py` first.')
 
 app = Flask(__name__)
 predictor = Predictor(CHECKPOINT)
+metrics = json.loads(METRICS.read_text()) if METRICS.exists() else None
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', metrics=metrics)
 
 
 @app.route('/predict', methods=['POST'])

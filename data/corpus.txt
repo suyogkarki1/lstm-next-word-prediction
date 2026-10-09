@@ -1,58 +1,114 @@
-SUYOG KARKI
-PROFILE Data Science Intern Candidate  | ML & Analytics  	 	 	 	Kathmandu  	 	github.com/suyogkarki1 	 	suyogkarki1.com.np 
-EDUCATION Data Science student experienced in building end-to-end machine learning projects using Python, SQL, and Scikit-learn covering data cleaning, EDA, feature engineering, statistical testing, preprocessing pipeline, crossvalidation, hyperparameter tuning, and model evaluation. Applied this across projects in weather forecasting, customer churn, and healthcare risk. I'm genuinely curious about AI and machine learning, and I want to keep getting better at it — looking for a data science/ML or analytics internship to learn and grow.
-Higher Secondary Education (+2) - Science, 
-Kathmandu Model College (KMC), Bagbazar GPA: 3.35 / 4.0	2020 – 2022
-Bachelor of Science in Information Technology (BSIT) - Data Science, 	2023 – 2027
-Kings College, Kathmandu (Affiliated with Westcliff University, California)
-Currently in 4th Year  GPA: 3.54 / 4.0
-TECHNICAL SKILLS Languages :  Python · SQL	Data Analysis : Pandas · NumPy · Excel
-Data Visualization:  Matplotlib · Seaborn · Power 	Tools: Git & GitHub BI
-Currently Learning: Neural Networks · Deep 
-Machine Learning : Scikit-learn · PyTorch	Learning · Computer Vision 
-PROJECTS Chini — Diabetes Risk Predictor for Women
-       Python · Pandas · NumPy · Matplotlib · Seaborn · Scikit-learn · SciPy · Streamlit · Docker
-       GitHub: https://github.com/suyogkarki1/diabetes_pipeline.git  
-       Live: https://chinisugar.streamlit.app/  
-  Built a diabetes risk predictor for adult women•	 on the Pima Indians dataset (768 records), using a scikitlearn pipeline that fills in missing values and scales features, so it works even with incomplete patient data.
-  Ran •	Welch's t-tests comparing diabetic vs non-diabetic patients, using the t-statistic and p-value (α = 0.05) to judge significance and Cohen's d for effect size, to find which measurements best separate the two groups.
-  Compared five models with 5-fold cross-validation and tuned each with GridSearchCV (including•	 
-L1/L2/ElasticNet regularization for Logistic Regression), keeping all preprocessing inside the folds to prevent data leakage.
-  Chose•	 Logistic Regression and scored on PR-AUC instead of accuracy because the data is imbalanced, reaching 0.81 ROC-AUC, 73% accuracy, and 0.72 recall on the test set.
-  Deployed it as an interactive Streamlit web app, containerized with Docker for easy setup.•
-Kathmandu Rain Prediction
-       Python · Pandas · NumPy · Scikit-learn · Matplotlib · Seaborn · Streamlit 
-       GitHub: https://github.com/suyogkarki1/Rain-Prediction-    Live: https://barshamausam.streamlit.app/  
-  Sourced a 10-year Kathmandu weather dataset (2015–2025, 3,468 records) from Kaggle, and performed data•	 cleaning, unit conversion, and feature engineering across 14 meteorological variables for supervised classification.
-  Built and evaluated four classification models Logistic Regression, Decision Tree, K-Nearest Neighbors, and•	 Random Forest  using stratified 6-fold cross-validation; selected Random Forest as the final model, achieving 84% accuracy and 0.90 ROC-AUC on held-out test data.
-  Conducted feature importance analysis identifying •	humidity, temperature, and cloud cover as the strongest rainfall predictors, validating the model against real-world Kathmandu Valley monsoon patterns.
-  Applied •	bootstrap resampling to estimate 2026 monthly rain probabilities with lower and upper uncertainty bounds, and developed a separate SARIMA seasonal time-series model to forecast monthly rainy-day percentages for comparison.
-  Deployed the trained model as an interactive Streamlit web application •	(SkyCast) enabling real-time rain classification from user-defined weather inputs and visualizing seasonal forecast trends.
+My name is Suyog Karki and I am a data analyst and data science student from Kathmandu, Nepal.
+I work across data science and machine learning, and I am in the fourth year of my Bachelor of Science in Information Technology with a focus on data science.
+I love to code. Coding is the thing I enjoy most, and I can spend hours building something until it finally works.
+I love writing Python, and I enjoy turning raw data into clear answers that help people make better decisions.
+I am genuinely curious about AI and machine learning, and I want to keep getting better at it every single day.
+I am looking for a data science, machine learning, analytics or MIS role where I can learn, grow and support business decisions with reliable data and reporting.
+
+ABOUT ME
+I love to code, I love to play football, and I love to hike in the mountains.
+When I am not coding, I am usually playing football, snooker or table tennis with my friends.
+I am interested in football, snooker and table tennis, and I enjoy both playing and watching them.
+Football is my favourite sport because it is fast, it is about teamwork, and every match feels different.
+I love to play football with my friends on weekends, and I enjoy watching big football matches at night.
+Playing football taught me that a team works best when everyone trusts each other and plays their role.
+Snooker is a game of patience, focus and planning, and I love how every shot needs you to think a few moves ahead.
+I enjoy playing snooker because it feels a lot like debugging code, where one small mistake changes everything.
+Table tennis is quick and fun, and I love the fast rallies and the quick reactions it needs.
+I play table tennis to relax after a long day of coding and studying.
+I love to hike, and I love to visit the mountains whenever I get the chance.
+Hiking clears my mind, and the mountains remind me how big and beautiful the world is.
+Living in Nepal means the mountains are never far away, and I love to visit them whenever I can.
+I love to visit new places in the mountains, walk through the hills, and watch the sunrise over the Himalayas.
+After a long hike, the view from the top makes every step worth it.
+Hiking taught me patience, because the best views always come after the hardest climbs.
+On weekends I like to hike with my friends, play football, or spend time on a new coding project.
+I love to learn new things, whether it is a new machine learning model, a new football skill, or a new hiking trail.
+I believe that consistency beats talent, both in sport and in code.
+I enjoy solving problems, and I like projects where I can see my work being used by real people.
+In my free time I love to code, play football, play snooker, play table tennis, hike, and visit the mountains.
+I am a calm, curious and hardworking person who likes to keep improving step by step.
+I speak Nepali as my native language and I speak English fluently.
+
+EDUCATION
+I am studying for a Bachelor of Science in Information Technology in Data Science at Kings College in Kathmandu, affiliated with Westcliff University in California.
+I started my bachelor degree in 2023 and I will finish it in 2027.
+I am currently in my fourth year, and my GPA is 3.54 out of 4.0.
+Before that, I completed my higher secondary education in science at Kathmandu Model College in Bagbazar from 2020 to 2022 with a GPA of 3.35 out of 4.0.
+
+TECHNICAL SKILLS
+For data and analysis I use Python, Pandas, NumPy, SQL, Excel and exploratory data analysis.
+For machine learning and modeling I use Scikit-learn, PyTorch and Optuna.
+For deep learning I have worked with artificial neural networks, convolutional neural networks, recurrent neural networks, LSTM and transfer learning.
+For business intelligence and visualization I use Power BI, Matplotlib, Seaborn and Streamlit.
+For databases and tools I use PostgreSQL, Git and GitHub, Docker and Vercel.
+For web development I use Next.js, React and GSAP.
+I am currently learning natural language processing and transformers.
+I have hands-on experience cleaning and transforming raw data with Python, writing SQL queries, and performing exploratory data analysis and statistical testing to find meaningful patterns.
+I use statistical tests such as Welch's t-test and Cohen's d to measure whether differences between groups are real and how big they are.
+I have experience building end-to-end machine learning projects covering data cleaning, feature engineering, preprocessing pipelines, cross-validation, hyperparameter tuning and model evaluation.
+
+CERTIFICATIONS
+I completed the Supervised Learning with Scikit-learn course on DataCamp in 2026.
+I earned the Associate Data Scientist Certification from DataCamp in 2026.
+I earned the SQL Associate certification from DataCamp in 2026.
+
+PROJECTS
 Customer Churn Prediction
-        Python · Pandas · Scikit-learn · Matplotlib · Seaborn
-       GitHub : https://github.com/suyogkarki1/customer-churn-prediction  
-  Analyzed a Kaggle dataset of 10,000 European bank customers to identify behavioral patterns linked to•	 churn, including credit score, account balance, and product usage habits.
-  Engineered new features including •	BalancePerProduct and AgeGroup; conducted full EDA to uncover class imbalance and key churn indicators before applying preprocessing steps.
-  Achieved •	86.35% accuracy and 0.87 ROC-AUC using Gradient Boosting Classifier, selected after benchmarking against simpler models including Logistic Regression and Decision Tree.
-  Feature importance analysis revealed •	Age and NumOfProducts as the strongest churn predictors — suggesting retention teams should prioritize older single-product customers as the highest risk segment
-Smart Healthcare and Lifestyle Prediction
-        Python · Pandas · Scikit-learn · Matplotlib · Seaborn
-       GitHub : https://github.com/suyogkarki1/Smart-Healthcare-and-Lifestyle-Prediction  
-  Worked with a Kaggle healthcare dataset of•	 5,000 patient records with clinical indicators like blood pressure, cholesterol, BMI, smoking habits, and chest pain severity.
-  Ran a full pipeline data cleaning, EDA, feature analysis, model training, and evaluation using a •	stratified train/test split to keep the class balance the same, and compared several models before choosing Logistic Regression.
-  The data was •	imbalanced, so I used class_weight='balanced' and looked at PR-AUC and recall, not just accuracy, since accuracy can be misleading on imbalanced data.
-  Got 99.4% accuracy and 0.999 ROC-AUC, but I didn't fully trust these numbers — scores this high usually•	 mean the data is cleanly separated or synthetic, not real-world skill. I used cross-validation to check there was no data leakage in my pipeline..
+I built a customer churn prediction project using Python, Pandas, Scikit-learn, Matplotlib and Seaborn.
+I analyzed a Kaggle dataset of 10,000 European bank customers to identify behavioral patterns linked to churn, including credit score, account balance and product usage habits.
+I engineered new features including BalancePerProduct and AgeGroup, and conducted full exploratory data analysis to uncover class imbalance and key churn indicators before applying preprocessing steps.
+I achieved 86.35% accuracy and 0.87 ROC-AUC using a Gradient Boosting Classifier, selected after benchmarking against simpler models including Logistic Regression and Decision Tree.
+Feature importance analysis revealed Age and NumOfProducts as the strongest churn predictors, suggesting retention teams should prioritize older single-product customers as the highest risk segment.
+
+Personal Portfolio Website
+I built a responsive personal portfolio website with Next.js and React, using reusable components for the project showcase, tech stack and values sections.
+I added interactive animations with GSAP, including a clickable portrait that scatters and rebuilds, and an interactive project selector.
+I deployed the portfolio on Vercel with a custom domain, linking my live projects, GitHub and resume.
+
+Kathmandu Rain Prediction
+I built a Kathmandu rain prediction project using Python, Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn and Streamlit.
+I cleaned and transformed a 10-year Kathmandu weather dataset with 3,468 records and 14 meteorological variables, including unit conversion and feature engineering.
+I compared four classification models, Logistic Regression, Decision Tree, K-Nearest Neighbors and Random Forest, using stratified cross-validation.
+I selected Random Forest as the final model, achieving 84% accuracy and 0.90 ROC-AUC on held-out test data.
+Feature importance analysis identified humidity, temperature and cloud cover as the strongest rainfall predictors, which matches real Kathmandu Valley monsoon patterns.
+I applied bootstrap resampling to estimate monthly rain probabilities with lower and upper uncertainty bounds.
+I developed a SARIMA seasonal time-series model to forecast the monthly percentage of rainy days.
+I deployed the trained model as an interactive Streamlit web application that classifies rain in real time from user-defined weather inputs.
+
 UAE ID Card Number Extraction Pipeline
-        Python · YOLOv11 (Ultralytics) · OpenCV · Tesseract OCR · PostgreSQL
-        Github: https://github.com/suyogkarki1/object_detection.git  
-  Annotated a custom dataset of 424 UAE ID card images on Ultralytics HUB, labeling the ID-number field as a•	 dedicated detection class, split into 405 train / 10 validation / 9 test images.
-  Trained and deployed a custom YOLOv11 model via Ultralytics' hosted endpoint, achieving •	99.5% mAP50 and 95.0% recall on ID-number localization.
-  Built an OCR pipeline (OpenCV preprocessing + Tesseract) to extract and clean detected ID numbers via•	 regex, then persisted records to PostgreSQL with conflict-safe deduplication.
+I built an ID card number extraction pipeline using Python, YOLOv11 from Ultralytics, OpenCV, Tesseract OCR and PostgreSQL.
+I annotated a custom dataset of 424 UAE ID card images on Ultralytics HUB, labeling the ID number field as a dedicated detection class, split into 405 train, 10 validation and 9 test images.
+I trained and deployed a custom YOLOv11 model through the Ultralytics hosted endpoint, achieving 99.5% mAP50 and 95.0% recall on ID number localization.
+I built an OCR pipeline with OpenCV preprocessing and Tesseract to extract and clean detected ID numbers with regex, then persisted the records to PostgreSQL with conflict-safe deduplication.
+
+Diabetic Retinopathy Severity Grading
+I built a diabetic retinopathy severity grading project on the APTOS 2019 dataset using Python, PyTorch, torchvision, OpenCV, Scikit-learn, Pandas and NumPy.
+I built a convolutional neural network using EfficientNet-B3 with transfer learning to grade diabetic eye disease from 0 to 4 using 3,662 retina images.
+I fixed a drop on the Kaggle hidden test set by adding about 17,000 external images, raising the private score from 0.848 to 0.894.
+
+Chini, a Diabetes Risk Predictor for Women
+I built Chini, a diabetes risk predictor for adult women, using Python, Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn, SciPy, Streamlit and Docker.
+I built the diabetes risk predictor on the Pima Indians dataset with 768 records, using a Scikit-learn pipeline that fills in missing values and scales features, so it works even with incomplete patient data.
+I used Welch's t-test and Cohen's d to find which measurements best separate diabetic and non-diabetic patients.
+I compared five models with 5-fold cross-validation and tuned each with GridSearchCV, including L1, L2 and ElasticNet regularization for Logistic Regression, keeping all preprocessing inside the folds to prevent data leakage.
+I chose Logistic Regression and scored it on PR-AUC instead of accuracy because the data is imbalanced, reaching 0.81 ROC-AUC and 0.72 recall on the test set.
+I deployed it as an interactive Streamlit web app, containerized with Docker for easy setup.
+
+Smart Healthcare and Lifestyle Prediction
+I worked with a Kaggle healthcare dataset of 5,000 patient records with clinical indicators like blood pressure, cholesterol, BMI, smoking habits and chest pain severity.
+I ran a full pipeline of data cleaning, exploratory data analysis, feature analysis, model training and evaluation using a stratified train and test split to keep the class balance the same.
+The data was imbalanced, so I used balanced class weights and looked at PR-AUC and recall, not just accuracy, since accuracy can be misleading on imbalanced data.
+I got 99.4% accuracy and 0.999 ROC-AUC, but I did not fully trust these numbers, because scores this high usually mean the data is cleanly separated or synthetic.
+I used cross-validation to check that there was no data leakage in my pipeline.
+
 QR Code Validator Using Finite Automata
-Python · Graphviz · Deterministic Finite Automata
-Github: https://github.com/suyogkarki1/qr-code-authentication.git  
-  Built a system that validates QR code data using a Deterministic Finite Automaton (DFA), checking the•	 bitstream structure step by step and accepting or rejecting based on whether it reaches a valid end state.
-  Parsed and extracted structured information from valid codes, handling two formats bank payment QRs•	 (account name, number, type) and WiFi QRs (SSID, password).
-Generated DFA state diagrams with Graphviz to visualize the validation flow.•
-Applied theory-of-computation concepts (finite automata) to a practical data-validation problem•
-LANGUAGES Nepali	Englis Native	Fluent
+I built a system that validates QR code data using a deterministic finite automaton, checking the bitstream structure step by step and accepting or rejecting it based on whether it reaches a valid end state.
+I parsed and extracted structured information from valid codes, handling bank payment QR codes and WiFi QR codes.
+I generated state diagrams with Graphviz to visualize the validation flow.
+I applied theory of computation concepts like finite automata to a practical data validation problem.
+
+LSTM Next Word Prediction Keyboard
+I built a next word prediction keyboard using PyTorch, an LSTM language model and Flask.
+The keyboard suggests the next word as you type and completes the word you are typing, just like a phone keyboard.
+I evaluated the model on held-out sentences using perplexity and top-3 accuracy, and compared it against a simple bigram baseline.

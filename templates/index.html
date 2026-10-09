@@ -13,17 +13,22 @@
 <section class="info">
   <div class="badge"><span class="dot"></span> PyTorch · LSTM</div>
   <h1>NextWord<br><span>Keyboard</span></h1>
-  <p>Type on the iPhone and the LSTM predicts your next word. Halfway through a word, it completes it for you.</p>
+  <p>A personal keyboard trained on my own writing. Type on the iPhone and the LSTM predicts your next word. Halfway through a word, it completes it for you.</p>
+  {% if metrics %}
+  {% set cv = metrics.cross_validation %}
   <div class="stats">
-    <div><b>100</b><small>embedding</small></div>
-    <div><b>150</b><small>hidden units</small></div>
-    <div><b>Top 3</b><small>softmax</small></div>
+    <div><b>{{ '%.0f' % (cv.lstm.top3_acc.mean * 100) }}%</b><small>top-3 accuracy</small></div>
+    <div><b>{{ '%.0f' % cv.lstm.perplexity.mean }}</b><small>perplexity</small></div>
+    <div><b>{{ metrics.data.final_vocab_size }}</b><small>words known</small></div>
   </div>
+  <div class="stats-note">{{ cv.folds }}-fold cross-validation on unseen sentences · bigram baseline: {{ '%.0f' % (cv.bigram_baseline.top3_acc.mean * 100) }}% top-3, {{ '%.0f' % cv.bigram_baseline.perplexity.mean }} perplexity</div>
+  {% endif %}
   <div class="tryme">
     <div class="label">Try a starter phrase</div>
-    <button data-text="Built a diabetes risk ">Built a diabetes risk <em>…</em></button>
-    <button data-text="Deployed the trained model as an ">Deployed the trained model as an <em>…</em></button>
-    <button data-text="Feature importance analysis ">Feature importance analysis <em>…</em></button>
+    <button data-text="I love to ">I love to <em>…</em></button>
+    <button data-text="In my free time I love to play ">In my free time I love to play <em>…</em></button>
+    <button data-text="Snooker is a game of ">Snooker is a game of <em>…</em></button>
+    <button data-text="I built a diabetes risk ">I built a diabetes risk <em>…</em></button>
   </div>
   <div class="hint"><kbd>Tab</kbd> accept top suggestion &nbsp;·&nbsp; <kbd>Enter</kbd> send</div>
 </section>

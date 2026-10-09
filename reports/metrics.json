@@ -1,0 +1,132 @@
+{
+  "data": {
+    "sentences": 99,
+    "tokens": 1856,
+    "final_vocab_size": 693
+  },
+  "model": {
+    "embed_dim": 128,
+    "hidden_dim": 128,
+    "num_layers": 1,
+    "dropout": 0.5,
+    "seq_len": 30,
+    "lr": 0.002,
+    "weight_decay": 0.0001,
+    "batch_size": 64,
+    "patience": 15,
+    "final_epochs": 60
+  },
+  "cross_validation": {
+    "folds": 5,
+    "lstm": {
+      "perplexity": {
+        "mean": 99.8766,
+        "std": 18.9198
+      },
+      "top1_acc": {
+        "mean": 0.2074,
+        "std": 0.0253
+      },
+      "top3_acc": {
+        "mean": 0.3628,
+        "std": 0.0256
+      }
+    },
+    "bigram_baseline": {
+      "perplexity": {
+        "mean": 106.4063,
+        "std": 21.6957
+      },
+      "top1_acc": {
+        "mean": 0.222,
+        "std": 0.0191
+      },
+      "top3_acc": {
+        "mean": 0.3622,
+        "std": 0.0274
+      }
+    },
+    "per_fold": [
+      {
+        "fold": 1,
+        "best_epoch": 29,
+        "test_words": 401,
+        "oov_rate": 0.3017,
+        "lstm": {
+          "perplexity": 121.5861,
+          "top1_acc": 0.1929,
+          "top3_acc": 0.3357
+        },
+        "bigram": {
+          "perplexity": 110.1634,
+          "top1_acc": 0.2036,
+          "top3_acc": 0.3357
+        }
+      },
+      {
+        "fold": 2,
+        "best_epoch": 12,
+        "test_words": 303,
+        "oov_rate": 0.231,
+        "lstm": {
+          "perplexity": 96.5427,
+          "top1_acc": 0.1845,
+          "top3_acc": 0.3863
+        },
+        "bigram": {
+          "perplexity": 94.7162,
+          "top1_acc": 0.2489,
+          "top3_acc": 0.3991
+        }
+      },
+      {
+        "fold": 3,
+        "best_epoch": 22,
+        "test_words": 418,
+        "oov_rate": 0.2608,
+        "lstm": {
+          "perplexity": 111.6759,
+          "top1_acc": 0.2039,
+          "top3_acc": 0.3398
+        },
+        "bigram": {
+          "perplexity": 135.6177,
+          "top1_acc": 0.2071,
+          "top3_acc": 0.3463
+        }
+      },
+      {
+        "fold": 4,
+        "best_epoch": 18,
+        "test_words": 349,
+        "oov_rate": 0.2894,
+        "lstm": {
+          "perplexity": 71.4675,
+          "top1_acc": 0.25,
+          "top3_acc": 0.3911
+        },
+        "bigram": {
+          "perplexity": 77.7068,
+          "top1_acc": 0.2339,
+          "top3_acc": 0.3831
+        }
+      },
+      {
+        "fold": 5,
+        "best_epoch": 24,
+        "test_words": 385,
+        "oov_rate": 0.2805,
+        "lstm": {
+          "perplexity": 98.1107,
+          "top1_acc": 0.2058,
+          "top3_acc": 0.361
+        },
+        "bigram": {
+          "perplexity": 113.8274,
+          "top1_acc": 0.2166,
+          "top3_acc": 0.3466
+        }
+      }
+    ]
+  }
+}
