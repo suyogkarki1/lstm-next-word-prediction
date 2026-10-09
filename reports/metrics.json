@@ -25,7 +25,8 @@
       "tie_weights": true,
       "lr": 0.001,
       "weight_decay": 0.0,
-      "final_epochs": 18
+      "final_epochs": 70,
+      "cv_median_best_epoch": 18
     }
   },
   "cross_validation": {
@@ -271,42 +272,52 @@
     "I love to": [
       "visit",
       "play",
-      "hike"
+      "code"
     ],
     "I love to play": [
       "football",
       "table",
-      "a"
+      "with"
     ],
     "I love to visit the": [
       "mountains",
-      "new",
-      "project"
+      "quick",
+      "new"
     ],
     "In my free time I": [
       "love",
-      "use",
+      "enjoy",
       "have"
     ],
     "Snooker is a game of": [
-      "my",
       "patience",
+      "my",
       "a"
     ],
     "Hiking clears my": [
       "mind",
-      "friends",
-      "and"
+      "my",
+      "live"
     ],
     "I built a diabetes risk": [
       "predictor",
-      "of",
-      "on"
+      "against",
+      "for"
     ],
     "I am currently learning": [
-      "and",
       "natural",
-      "with"
+      "my",
+      "identified"
     ]
+  },
+  "reply_samples": {
+    "I love to": "visit new places in the mountains walk through",
+    "I love to play": "football with my friends on weekends and i",
+    "I love to visit the": "mountains whenever i get the chance",
+    "In my free time I": "love to code play football after a long",
+    "Snooker is a game of": "patience focus and planning",
+    "Hiking clears my": "mind and the mountains remind me how big",
+    "I built a diabetes risk": "predictor for women using python pandas numpy matplotlib",
+    "I am currently learning": "natural language processing and transformers"
   }
 }

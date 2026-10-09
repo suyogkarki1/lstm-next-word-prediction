@@ -28,15 +28,24 @@ All models are evaluated with **5-fold cross-validation over my personal sentenc
 
 The training curves show overfitting that early stopping catches: validation loss bottoms out while training loss keeps falling. The two panels' loss values are not directly comparable. The personal-only model's loss skips the ~27% of words outside its small vocabulary, while the fine-tuned model is scored on nearly all of them.
 
-### Sample suggestions (shipped model)
+### Sample suggestions and replies (shipped model)
 
-| You type | Suggestions |
-|---|---|
-| `I love to` | visit · play · hike |
-| `I love to play` | football · table · a |
-| `I love to visit the` | mountains · new · project |
-| `Hiking clears my` | mind · friends · and |
-| `I built a diabetes risk` | predictor · of · on |
+| You type | Suggestions | Chat reply (LSTM continues) |
+|---|---|---|
+| `I love to` | visit · play · code | …visit new places in the mountains walk through… |
+| `Snooker is a game of` | patience · my · a | …patience focus and planning. |
+| `I am currently learning` | natural · my · identified | …natural language processing and transformers. |
+| `I built a diabetes risk` | predictor · against · for | …predictor for women using python pandas numpy matplotlib… |
+
+### Two goals, two training lengths
+
+Cross-validation answers *"how well does it predict sentences it has never seen?"*. That peaks after ~18 fine-tuning epochs, and those epochs produced the table above. But the shipped keyboard should know **my own** sentences well. At 18 epochs it predicts only 57% of my next words, and its chat replies kept looping on frequent phrases ("a new machine learning…" in 5 of 10 replies). At **70 epochs** it predicts 92% of them and replies stay coherent, so the app model is fine-tuned for 70 epochs (`FINAL_EPOCHS` in `train.py`).
+
+| Fine-tuning epochs | Next word right on my own text | Most repeated phrase across 10 replies |
+|---|---|---|
+| 18 (best for unseen text) | 57% | "new machine learning" ×5 |
+| 40 | 88% | "and i am" ×2 |
+| **70 (shipped)** | **92%** | none |
 
 ## How it works
 
@@ -49,7 +58,7 @@ The training curves show overfitting that early stopping catches: validation los
 - **Vocabulary**: the pretrained vocabulary is extended with my words. Known words keep their trained vectors, and new ones start random.
 - **Examples**: every prefix of every sentence becomes one (context → next word) example. Contexts are left-padded to 30 tokens, and the LSTM **skips padding entirely** using packed sequences.
 - **Training**: learning rate 1e-3 (lower than pretraining, so knowledge is adapted rather than overwritten), dropout 0.5, early stopping on a validation slice.
-- **Shipped model**: fine-tuned on all sentences for the median best epoch found in cross-validation (18).
+- **Shipped model**: fine-tuned on all sentences for 70 epochs. See *Two goals, two training lengths* above.
 
 **Data handling**
 - Contact details and URLs are removed from the personal corpus.

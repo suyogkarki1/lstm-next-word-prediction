@@ -47,6 +47,11 @@ SCRATCH_CONFIG = dict(embed_dim=128, hidden_dim=128, num_layers=1, dropout=0.5)
 SCRATCH_LR, SCRATCH_WD = 0.002, 1e-4
 # fine-tuning: lower learning rate so the pretrained knowledge is adapted, not overwritten
 FINETUNE_LR, FINETUNE_WD, FINETUNE_DROPOUT = 0.001, 0.0, 0.5
+# The shipped keyboard should know *my* sentences, not just generalize to unseen ones.
+# CV early stopping peaks at ~18 epochs (best on unseen text), but at that point the model
+# only gets 57% of my own next words right and greedy replies loop on frequent phrases.
+# At 70 epochs it gets 92% and replies stay coherent, so the app model trains longer.
+FINAL_EPOCHS = 70
 
 MODELS = ['bigram', 'lstm_scratch', 'pretrained_only', 'pretrained_ft']
 LABELS = {'bigram': 'Bigram baseline', 'lstm_scratch': 'LSTM, personal data only',
@@ -297,9 +302,11 @@ def main():
         print(f'{LABELS[m]:28}{s["perplexity"]["mean"]:>9.1f} ± {s["perplexity"]["std"]:<4.1f}'
               f'{s["top1_acc"]["mean"]:>10.1%}{s["top3_acc"]["mean"]:>10.1%}{s["vocab_coverage"]["mean"]:>10.1%}')
 
-    # the shipped model: fine-tune on everything for the typical best epoch found in CV
-    final_epochs = round(statistics.median(r['best_epoch']['pretrained_ft'] for r in results))
-    print(f'\n== Final model: fine-tune on all {len(sentences)} sentences for {final_epochs} epochs ==')
+    # the shipped model: fine-tune on everything (see FINAL_EPOCHS)
+    cv_best = round(statistics.median(r['best_epoch']['pretrained_ft'] for r in results))
+    final_epochs = FINAL_EPOCHS
+    print(f'\n== Final model: fine-tune on all {len(sentences)} sentences for {final_epochs} epochs '
+          f'(CV best for unseen text: {cv_best}) ==')
     torch.manual_seed(SEED)
     model, vocab, _, _ = finetune(pre_model, pre_vocab, pre_config, sentences, epochs=final_epochs)
     CHECKPOINT.parent.mkdir(exist_ok=True)
@@ -318,7 +325,8 @@ def main():
         'training': {'seq_len': SEQ_LEN, 'batch_size': BATCH_SIZE, 'patience': PATIENCE,
                      'scratch': {**SCRATCH_CONFIG, 'lr': SCRATCH_LR, 'weight_decay': SCRATCH_WD},
                      'finetune': {**pre_config, 'dropout': FINETUNE_DROPOUT, 'lr': FINETUNE_LR,
-                                  'weight_decay': FINETUNE_WD, 'final_epochs': final_epochs}},
+                                  'weight_decay': FINETUNE_WD, 'final_epochs': final_epochs,
+                                  'cv_median_best_epoch': cv_best}},
         'cross_validation': {'folds': K_FOLDS, 'summary': summary,
                              'per_fold': [{k: ({m: round(v, 4) for m, v in val.items()} if k in MODELS else val)
                                            for k, val in r.items()} for r in results]},
