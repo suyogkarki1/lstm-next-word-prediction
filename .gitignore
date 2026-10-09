@@ -5,3 +5,6 @@ __pycache__/
 
 # personal documents (contain contact details)
 *.pdf
+
+# downloaded pretraining data (fetched automatically by pretrain.py)
+data/wikitext/

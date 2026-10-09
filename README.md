@@ -1,83 +1,100 @@
 # NextWord Keyboard (LSTM)
 
-A personal next-word prediction keyboard. A PyTorch LSTM language model is trained on my own writing (CV, projects and an "about me"), and served through Flask to an iPhone-style keyboard that suggests the next word and completes the word you are typing.
+A personal next-word prediction keyboard. A PyTorch LSTM is **pretrained on general English** (WikiText-2, 1.9M words), then **fine-tuned on my own writing** (CV, projects and an "about me"). It's served through Flask to an iPhone-style keyboard with a suggestion bar, grey inline completion, and a chat where the LSTM finishes your sentences.
 
-![Training curves](reports/loss_curve.png)
+![Model comparison](reports/model_comparison.png)
 
 ## Results
 
-Evaluated with **5-fold cross-validation over sentences**: every fold is scored on sentences the model never saw, against an interpolated **bigram baseline** trained on the same data.
+All models are evaluated with **5-fold cross-validation over my personal sentences**. In every fold, each model is scored on exactly the same held-out words:
 
-| Model | Perplexity ↓ | Top-1 accuracy | Top-3 accuracy |
-|---|---|---|---|
-| LSTM | **99.9 ± 18.9** | 20.7% ± 2.5% | **36.3% ± 2.6%** |
-| Bigram baseline | 106.4 ± 21.7 | **22.2% ± 1.9%** | 36.2% ± 2.7% |
+| Model | Top-3 accuracy | Top-1 accuracy | Perplexity ↓ | Knows the word |
+|---|---|---|---|---|
+| **Pretrained + fine-tuned** | **29.4% ± 1.7** | **18.6% ± 2.4** | **78.9 ± 17.4** | **90.5%** |
+| Bigram baseline | 26.4% ± 2.8 | 16.2% ± 1.9 | 84.6 ± 15.3 | 72.7% |
+| LSTM, personal data only | 25.0% ± 1.9 | 16.1% ± 1.7 | 87.2 ± 13.8 | 72.7% |
+| Pretrained, no fine-tuning | 15.5% ± 1.1 | 7.5% ± 0.4 | 485.3 ± 45.7 | 79.3% |
 
-**What this shows:** on unseen sentences the LSTM roughly matches a bigram model. It has slightly lower perplexity, and the accuracies are equal within noise. The bottleneck is data, not architecture: the corpus has only ~100 sentences, and **~27% of test words never appear in training**, so no model can predict them. The training curves show the same thing: validation loss bottoms out around epoch 12–29 while training loss keeps falling, which is overfitting that early stopping catches.
+- **Top-k accuracy** is measured over *every* test word. A word a model can't produce counts as a miss, so all models share the same denominator.
+- **Perplexity** is measured over the words every model knows, so the numbers are directly comparable.
+- **Knows the word** is the share of test words in the model's vocabulary.
 
-Sample suggestions from the shipped model:
+**What this shows**
+- **Transfer learning works.** Pretraining plus fine-tuning is best on every metric. On top-3 it beats both baselines in 4 of 5 folds and ties the bigram in the other.
+- **The gain comes from vocabulary and language knowledge.** Trained on my ~100 sentences alone, an LSTM can't beat a bigram: about 27% of test words never appear in training. The pretrained model already knows 90% of them, and fine-tuning teaches it my phrasing.
+- **Either stage alone is not enough.** The pretrained model by itself writes like Wikipedia: "i love to" → *be, the, have*. After fine-tuning: "I love to" → *visit, play, hike*.
+
+![Training curves](reports/loss_curve.png)
+
+The training curves show overfitting that early stopping catches: validation loss bottoms out while training loss keeps falling. The two panels' loss values are not directly comparable. The personal-only model's loss skips the ~27% of words outside its small vocabulary, while the fine-tuned model is scored on nearly all of them.
+
+### Sample suggestions (shipped model)
 
 | You type | Suggestions |
 |---|---|
-| `I love to` | code · hike · visit |
-| `I love to play` | football · new · table |
-| `I love to visit the` | mountains · data · monthly |
-| `Snooker is a game of` | patience · coding · focus |
-| `Built a diabetes risk` | predictor · risk · for |
+| `I love to` | visit · play · hike |
+| `I love to play` | football · table · a |
+| `I love to visit the` | mountains · new · project |
+| `Hiking clears my` | mind · friends · and |
+| `I built a diabetes risk` | predictor · of · on |
 
 ## How it works
 
-- **Data**: `data/corpus.txt`, split into sentences. Contact details and URLs are removed.
-- **Tokenizing**: lowercase NLTK word tokens. `<pad>` (0) and `<unk>` (1) are separate indices, and the embedding uses `padding_idx` so padding never carries meaning.
-- **Training examples**: every prefix of every sentence gives one example, with the context left-padded to 30 tokens. The empty prefix is included, so the model also learns how sentences start.
-- **Model**: Embedding(128) → LSTM(128 hidden, 1 layer) → dropout 0.5 → Linear(vocab). Adam with weight decay 1e-4, gradient clipping, and learning rate reduced on plateau.
-- **Model choice**: a small validation sweep. Bigger 2-layer models (256 hidden) overfit within ~6 epochs on this little data.
-- **Evaluation**: in each fold, the vocabulary is built from training sentences only. Early stopping uses a 10% validation slice. Perplexity and top-k accuracy are computed on the held-out fold, excluding out-of-vocabulary targets.
-- **Shipped model**: retrained on the full corpus for 60 epochs. It is a personal keyboard, so the deployed model is meant to learn all of my writing, the way a phone keyboard adapts to its user.
+**Stage 1: pretraining** (`pretrain.py`)
+- **Data**: WikiText-2 (raw), 1.87M training tokens, downloaded automatically. Vocabulary is the 12,000 most frequent words.
+- **Model**: Embedding(256) → LSTM(256) → Linear, with **tied input/output embeddings** (Press & Wolf, 2017) and dropout 0.3.
+- **Training**: language-model training on the token stream. Batch 64, truncated backprop through time over 35 steps, Adam with a step-decayed learning rate, 4 epochs. WikiText validation perplexity went 425 → 351 → 321 → **305**.
+
+**Stage 2: fine-tuning** (`train.py`)
+- **Vocabulary**: the pretrained vocabulary is extended with my words. Known words keep their trained vectors, and new ones start random.
+- **Examples**: every prefix of every sentence becomes one (context → next word) example. Contexts are left-padded to 30 tokens, and the LSTM **skips padding entirely** using packed sequences.
+- **Training**: learning rate 1e-3 (lower than pretraining, so knowledge is adapted rather than overwritten), dropout 0.5, early stopping on a validation slice.
+- **Shipped model**: fine-tuned on all sentences for the median best epoch found in cross-validation (18).
+
+**Data handling**
+- Contact details and URLs are removed from the personal corpus.
+- In each fold, the vocabulary comes from training sentences only.
+- The bigram baseline is interpolated with a unigram distribution (λ = 0.7).
 
 ## Project structure
 
 ```
 LSTM/
-├── app.py                  # Flask server (UI + /predict API)
-├── train.py                # cross-validation, baseline, final training
+├── app.py                  # Flask server: page, /predict, /continue
+├── pretrain.py             # stage 1: WikiText-2 language model
+├── train.py                # stage 2: fine-tuning + 4-way cross-validation
 ├── nextword/
-│   └── model.py            # tokenizer, LSTM, Predictor
-├── data/
-│   └── corpus.txt          # training text
+│   ├── model.py            # tokenizer, LSTM, vocab expansion, Predictor
+│   └── wikitext.py         # WikiText-2 download + preprocessing
+├── data/corpus.txt         # personal training text
 ├── artifacts/
-│   └── lstm_next_word.pt   # trained model + vocab
-├── reports/
-│   ├── metrics.json        # per-fold and averaged metrics
-│   └── loss_curve.png
+│   ├── pretrained_lstm.pt  # stage 1 model
+│   └── lstm_next_word.pt   # shipped model
+├── reports/                # metrics.json, pretrain_metrics.json, charts
 ├── templates/index.html    # keyboard page
 ├── static/                 # css + js
-├── notebooks/
-│   └── LSTM.ipynb          # original exploration notebook
-└── requirements.txt
+└── notebooks/LSTM.ipynb    # original exploration notebook
 ```
 
-## Setup
+## Setup and usage
 
 ```powershell
 python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
-python -m ipykernel install --user --name lstm-venv --display-name "Python (LSTM venv)"
+
+python pretrain.py   # optional, ~35 min on CPU: the pretrained model is already in artifacts/
+python train.py      # ~12 min: cross-validation + final fine-tuning
+python app.py        # open http://127.0.0.1:5000
 ```
 
-## Usage
+In the UI:
+- Tap a suggestion, or press **Tab**, to accept it. Grey inline text shows the top prediction.
+- Press **Enter** to send. The LSTM replies by continuing your sentence.
 
-```powershell
-python train.py   # cross-validate, then train the final model (~2 min on CPU)
-python app.py     # open http://127.0.0.1:5000
-```
+## Limitations and next steps
 
-In the UI, tap a suggestion (or press **Tab**) to accept it, and press **Enter** to send.
-
-## Next steps
-
-- **More text.** This is the biggest lever. More of my own writing would cut the 27% out-of-vocabulary rate.
-- Pretrain on a general English corpus, then fine-tune on personal text.
-- Subword tokenization (BPE), so unseen words can still be built from known pieces.
-- Compare against a small Transformer.
+- **More personal text** is still the biggest lever, since only ~100 sentences are used for fine-tuning.
+- **Greedy generation** in chat replies tends to drift and repeat. Beam search or nucleus sampling would help.
+- **Subword tokenization** (BPE) would let the model handle words it has never seen.
+- **A small Transformer** pretrained the same way would be a natural comparison.

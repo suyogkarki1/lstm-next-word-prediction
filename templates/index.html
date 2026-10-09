@@ -11,17 +11,26 @@
 <body>
 
 <section class="info">
-  <div class="badge"><span class="dot"></span> PyTorch · LSTM</div>
+  <div class="badge"><span class="dot"></span> PyTorch · LSTM · pretrained + fine-tuned</div>
   <h1>NextWord<br><span>Keyboard</span></h1>
-  <p>A personal keyboard trained on my own writing. Type on the iPhone and the LSTM predicts your next word. Halfway through a word, it completes it for you.</p>
+  <p>An LSTM pretrained on 1.9M words of English (WikiText-2), then fine-tuned on my own writing. It predicts your next word and completes the one you are typing.</p>
   {% if metrics %}
-  {% set cv = metrics.cross_validation %}
-  <div class="stats">
-    <div><b>{{ '%.0f' % (cv.lstm.top3_acc.mean * 100) }}%</b><small>top-3 accuracy</small></div>
-    <div><b>{{ '%.0f' % cv.lstm.perplexity.mean }}</b><small>perplexity</small></div>
-    <div><b>{{ metrics.data.final_vocab_size }}</b><small>words known</small></div>
+  {% set s = metrics.cross_validation.summary %}
+  <div class="results">
+    <div class="results-head">
+      <span>Top-3 accuracy on unseen sentences</span>
+      <small>{{ metrics.cross_validation.folds }}-fold CV</small>
+    </div>
+    {% for key, label in [('pretrained_ft', 'Pretrained + fine-tuned'), ('pretrained_only', 'Pretrained only'), ('lstm_scratch', 'LSTM, my data only'), ('bigram', 'Bigram baseline')] %}
+    {% set v = s[key].top3_acc.mean * 100 %}
+    <div class="result-row{% if key == 'pretrained_ft' %} best{% endif %}"
+         title="{{ label }}: top-3 {{ '%.1f' % v }}% ± {{ '%.1f' % (s[key].top3_acc.std * 100) }} · perplexity {{ '%.0f' % s[key].perplexity.mean }} · knows {{ '%.0f' % (s[key].vocab_coverage.mean * 100) }}% of test words">
+      <span class="name">{{ label }}</span>
+      <span class="track"><i style="width: {{ '%.1f' % v }}%"></i></span>
+      <span class="val">{{ '%.0f' % v }}%</span>
+    </div>
+    {% endfor %}
   </div>
-  <div class="stats-note">{{ cv.folds }}-fold cross-validation on unseen sentences · bigram baseline: {{ '%.0f' % (cv.bigram_baseline.top3_acc.mean * 100) }}% top-3, {{ '%.0f' % cv.bigram_baseline.perplexity.mean }} perplexity</div>
   {% endif %}
   <div class="tryme">
     <div class="label">Try a starter phrase</div>
@@ -30,7 +39,7 @@
     <button data-text="Snooker is a game of ">Snooker is a game of <em>…</em></button>
     <button data-text="I built a diabetes risk ">I built a diabetes risk <em>…</em></button>
   </div>
-  <div class="hint"><kbd>Tab</kbd> accept top suggestion &nbsp;·&nbsp; <kbd>Enter</kbd> send</div>
+  <div class="hint"><kbd>Tab</kbd> accept grey text &nbsp;·&nbsp; <kbd>Enter</kbd> send &nbsp;·&nbsp; the LSTM replies</div>
 </section>
 
 <div class="stage" id="stage">
@@ -78,7 +87,10 @@
           <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
         </button>
         <div class="input-wrap">
-          <textarea id="text" rows="1" placeholder="iMessage" autofocus spellcheck="false"></textarea>
+          <div class="field">
+            <div class="ghost" id="ghost" aria-hidden="true"></div>
+            <textarea id="text" rows="1" placeholder="iMessage" autofocus spellcheck="false"></textarea>
+          </div>
           <button class="send" id="send" aria-label="Send">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg>
           </button>

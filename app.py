@@ -28,5 +28,12 @@ def predict():
     return jsonify(predictor.suggest(text, k=3))
 
 
+@app.route('/continue', methods=['POST'])
+def continue_text():
+    text = (request.get_json(silent=True) or {}).get('text', '')
+    words, finished = predictor.generate(text)
+    return jsonify({'words': words, 'finished': finished})
+
+
 if __name__ == '__main__':
     app.run(debug=False, port=5000)

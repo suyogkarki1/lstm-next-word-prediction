@@ -1,0 +1,38 @@
+{
+  "dataset": "WikiText-2 (raw)",
+  "train_tokens": 1865024,
+  "val_tokens": 194752,
+  "vocab_size": 12000,
+  "model": {
+    "embed_dim": 256,
+    "hidden_dim": 256,
+    "num_layers": 1,
+    "dropout": 0.3,
+    "tie_weights": true
+  },
+  "batch_size": 64,
+  "bptt": 35,
+  "lr": 0.002,
+  "history": [
+    {
+      "epoch": 1,
+      "train_ppl": 840.54,
+      "val_ppl": 424.64
+    },
+    {
+      "epoch": 2,
+      "train_ppl": 473.3,
+      "val_ppl": 351.04
+    },
+    {
+      "epoch": 3,
+      "train_ppl": 404.24,
+      "val_ppl": 320.52
+    },
+    {
+      "epoch": 4,
+      "train_ppl": 371.63,
+      "val_ppl": 304.8
+    }
+  ]
+}

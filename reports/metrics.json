@@ -2,131 +2,311 @@
   "data": {
     "sentences": 99,
     "tokens": 1856,
-    "final_vocab_size": 693
+    "final_vocab_size": 12224,
+    "pretrained_vocab_size": 12000
   },
-  "model": {
-    "embed_dim": 128,
-    "hidden_dim": 128,
-    "num_layers": 1,
-    "dropout": 0.5,
+  "training": {
     "seq_len": 30,
-    "lr": 0.002,
-    "weight_decay": 0.0001,
     "batch_size": 64,
-    "patience": 15,
-    "final_epochs": 60
+    "patience": 10,
+    "scratch": {
+      "embed_dim": 128,
+      "hidden_dim": 128,
+      "num_layers": 1,
+      "dropout": 0.5,
+      "lr": 0.002,
+      "weight_decay": 0.0001
+    },
+    "finetune": {
+      "embed_dim": 256,
+      "hidden_dim": 256,
+      "num_layers": 1,
+      "dropout": 0.5,
+      "tie_weights": true,
+      "lr": 0.001,
+      "weight_decay": 0.0,
+      "final_epochs": 18
+    }
   },
   "cross_validation": {
     "folds": 5,
-    "lstm": {
-      "perplexity": {
-        "mean": 99.8766,
-        "std": 18.9198
+    "summary": {
+      "bigram": {
+        "perplexity": {
+          "mean": 84.5725,
+          "std": 15.2524
+        },
+        "top1_acc": {
+          "mean": 0.1617,
+          "std": 0.0187
+        },
+        "top3_acc": {
+          "mean": 0.2638,
+          "std": 0.0277
+        },
+        "vocab_coverage": {
+          "mean": 0.7273,
+          "std": 0.0277
+        }
       },
-      "top1_acc": {
-        "mean": 0.2074,
-        "std": 0.0253
+      "lstm_scratch": {
+        "perplexity": {
+          "mean": 87.196,
+          "std": 13.8393
+        },
+        "top1_acc": {
+          "mean": 0.1608,
+          "std": 0.0169
+        },
+        "top3_acc": {
+          "mean": 0.2499,
+          "std": 0.0192
+        },
+        "vocab_coverage": {
+          "mean": 0.7273,
+          "std": 0.0277
+        }
       },
-      "top3_acc": {
-        "mean": 0.3628,
-        "std": 0.0256
-      }
-    },
-    "bigram_baseline": {
-      "perplexity": {
-        "mean": 106.4063,
-        "std": 21.6957
+      "pretrained_only": {
+        "perplexity": {
+          "mean": 485.3477,
+          "std": 45.7182
+        },
+        "top1_acc": {
+          "mean": 0.0747,
+          "std": 0.0041
+        },
+        "top3_acc": {
+          "mean": 0.1547,
+          "std": 0.0105
+        },
+        "vocab_coverage": {
+          "mean": 0.793,
+          "std": 0.0174
+        }
       },
-      "top1_acc": {
-        "mean": 0.222,
-        "std": 0.0191
-      },
-      "top3_acc": {
-        "mean": 0.3622,
-        "std": 0.0274
+      "pretrained_ft": {
+        "perplexity": {
+          "mean": 78.9042,
+          "std": 17.4067
+        },
+        "top1_acc": {
+          "mean": 0.1855,
+          "std": 0.0236
+        },
+        "top3_acc": {
+          "mean": 0.2939,
+          "std": 0.0173
+        },
+        "vocab_coverage": {
+          "mean": 0.9053,
+          "std": 0.0174
+        }
       }
     },
     "per_fold": [
       {
         "fold": 1,
-        "best_epoch": 29,
         "test_words": 401,
-        "oov_rate": 0.3017,
-        "lstm": {
-          "perplexity": 121.5861,
-          "top1_acc": 0.1929,
-          "top3_acc": 0.3357
+        "best_epoch": {
+          "lstm_scratch": 22,
+          "pretrained_ft": 19
         },
         "bigram": {
-          "perplexity": 110.1634,
-          "top1_acc": 0.2036,
-          "top3_acc": 0.3357
+          "perplexity": 88.3053,
+          "top1_acc": 0.1421,
+          "top3_acc": 0.2344,
+          "vocab_coverage": 0.6983
+        },
+        "lstm_scratch": {
+          "perplexity": 92.304,
+          "top1_acc": 0.1397,
+          "top3_acc": 0.2294,
+          "vocab_coverage": 0.6983
+        },
+        "pretrained_only": {
+          "perplexity": 445.89,
+          "top1_acc": 0.0798,
+          "top3_acc": 0.1671,
+          "vocab_coverage": 0.798
+        },
+        "pretrained_ft": {
+          "perplexity": 76.6797,
+          "top1_acc": 0.187,
+          "top3_acc": 0.2918,
+          "vocab_coverage": 0.9002
         }
       },
       {
         "fold": 2,
-        "best_epoch": 12,
         "test_words": 303,
-        "oov_rate": 0.231,
-        "lstm": {
-          "perplexity": 96.5427,
-          "top1_acc": 0.1845,
-          "top3_acc": 0.3863
+        "best_epoch": {
+          "lstm_scratch": 13,
+          "pretrained_ft": 13
         },
         "bigram": {
-          "perplexity": 94.7162,
-          "top1_acc": 0.2489,
-          "top3_acc": 0.3991
+          "perplexity": 71.1081,
+          "top1_acc": 0.1914,
+          "top3_acc": 0.3069,
+          "vocab_coverage": 0.769
+        },
+        "lstm_scratch": {
+          "perplexity": 90.2724,
+          "top1_acc": 0.1617,
+          "top3_acc": 0.2805,
+          "vocab_coverage": 0.769
+        },
+        "pretrained_only": {
+          "perplexity": 534.272,
+          "top1_acc": 0.0693,
+          "top3_acc": 0.1617,
+          "vocab_coverage": 0.7954
+        },
+        "pretrained_ft": {
+          "perplexity": 82.0655,
+          "top1_acc": 0.165,
+          "top3_acc": 0.3069,
+          "vocab_coverage": 0.9175
         }
       },
       {
         "fold": 3,
-        "best_epoch": 22,
         "test_words": 418,
-        "oov_rate": 0.2608,
-        "lstm": {
-          "perplexity": 111.6759,
-          "top1_acc": 0.2039,
-          "top3_acc": 0.3398
+        "best_epoch": {
+          "lstm_scratch": 29,
+          "pretrained_ft": 18
         },
         "bigram": {
-          "perplexity": 135.6177,
-          "top1_acc": 0.2071,
-          "top3_acc": 0.3463
+          "perplexity": 102.9404,
+          "top1_acc": 0.1531,
+          "top3_acc": 0.256,
+          "vocab_coverage": 0.7392
+        },
+        "lstm_scratch": {
+          "perplexity": 93.7921,
+          "top1_acc": 0.1483,
+          "top3_acc": 0.2512,
+          "vocab_coverage": 0.7392
+        },
+        "pretrained_only": {
+          "perplexity": 470.1846,
+          "top1_acc": 0.0742,
+          "top3_acc": 0.1555,
+          "vocab_coverage": 0.7799
+        },
+        "pretrained_ft": {
+          "perplexity": 97.2442,
+          "top1_acc": 0.1627,
+          "top3_acc": 0.2727,
+          "vocab_coverage": 0.9043
         }
       },
       {
         "fold": 4,
-        "best_epoch": 18,
         "test_words": 349,
-        "oov_rate": 0.2894,
-        "lstm": {
-          "perplexity": 71.4675,
-          "top1_acc": 0.25,
-          "top3_acc": 0.3911
+        "best_epoch": {
+          "lstm_scratch": 25,
+          "pretrained_ft": 15
         },
         "bigram": {
-          "perplexity": 77.7068,
-          "top1_acc": 0.2339,
-          "top3_acc": 0.3831
+          "perplexity": 66.826,
+          "top1_acc": 0.1662,
+          "top3_acc": 0.2722,
+          "vocab_coverage": 0.7106
+        },
+        "lstm_scratch": {
+          "perplexity": 62.8086,
+          "top1_acc": 0.1777,
+          "top3_acc": 0.2493,
+          "vocab_coverage": 0.7106
+        },
+        "pretrained_only": {
+          "perplexity": 442.5674,
+          "top1_acc": 0.0774,
+          "top3_acc": 0.149,
+          "vocab_coverage": 0.7736
+        },
+        "pretrained_ft": {
+          "perplexity": 50.8963,
+          "top1_acc": 0.2206,
+          "top3_acc": 0.3152,
+          "vocab_coverage": 0.8797
         }
       },
       {
         "fold": 5,
-        "best_epoch": 24,
         "test_words": 385,
-        "oov_rate": 0.2805,
-        "lstm": {
-          "perplexity": 98.1107,
-          "top1_acc": 0.2058,
-          "top3_acc": 0.361
+        "best_epoch": {
+          "lstm_scratch": 25,
+          "pretrained_ft": 18
         },
         "bigram": {
-          "perplexity": 113.8274,
-          "top1_acc": 0.2166,
-          "top3_acc": 0.3466
+          "perplexity": 93.6826,
+          "top1_acc": 0.1558,
+          "top3_acc": 0.2494,
+          "vocab_coverage": 0.7195
+        },
+        "lstm_scratch": {
+          "perplexity": 96.8028,
+          "top1_acc": 0.1766,
+          "top3_acc": 0.239,
+          "vocab_coverage": 0.7195
+        },
+        "pretrained_only": {
+          "perplexity": 533.8247,
+          "top1_acc": 0.0727,
+          "top3_acc": 0.1403,
+          "vocab_coverage": 0.8182
+        },
+        "pretrained_ft": {
+          "perplexity": 87.6352,
+          "top1_acc": 0.1922,
+          "top3_acc": 0.2831,
+          "vocab_coverage": 0.9247
         }
       }
+    ]
+  },
+  "samples": {
+    "I love to": [
+      "visit",
+      "play",
+      "hike"
+    ],
+    "I love to play": [
+      "football",
+      "table",
+      "a"
+    ],
+    "I love to visit the": [
+      "mountains",
+      "new",
+      "project"
+    ],
+    "In my free time I": [
+      "love",
+      "use",
+      "have"
+    ],
+    "Snooker is a game of": [
+      "my",
+      "patience",
+      "a"
+    ],
+    "Hiking clears my": [
+      "mind",
+      "friends",
+      "and"
+    ],
+    "I built a diabetes risk": [
+      "predictor",
+      "of",
+      "on"
+    ],
+    "I am currently learning": [
+      "and",
+      "natural",
+      "with"
     ]
   }
 }

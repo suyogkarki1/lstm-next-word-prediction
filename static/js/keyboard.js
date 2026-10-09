@@ -1,10 +1,12 @@
 const textEl = document.getElementById('text');
+const ghostEl = document.getElementById('ghost');
 const chatEl = document.getElementById('chat');
 const keysEl = document.getElementById('keys');
 const suggBtns = [...document.querySelectorAll('.sugg')];
 const inputWrap = document.querySelector('.input-wrap');
 
-let shift = false, numbers = false, current = [], reqId = 0, timer = null;
+let shift = false, manualShift = false, numbers = false;
+let current = { partial: '', suggestions: [] }, reqId = 0, timer = null;
 
 const LAYOUTS = {
   letters: [
@@ -26,6 +28,26 @@ const ICONS = {
   shiftOn: '<svg width="20" height="19" viewBox="0 0 20 19"><path d="M10 1.5 1.5 10H6v7h8v-7h4.5z" fill="currentColor"/></svg>',
   back: '<svg width="25" height="18" viewBox="0 0 25 18"><path d="M8 1.5h14a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H8L1.5 9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m11.5 5.5 7 7m0-7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
 };
+
+/* ---------------- text helpers ---------------- */
+
+const beforeCaret = () => textEl.value.slice(0, textEl.selectionStart);
+const caretAtEnd = () => textEl.selectionStart === textEl.value.length;
+const atSentenceStart = s => !s.trim() || /[.!?]\s+$/.test(s);
+
+// the model works in lowercase; show words the way a phone keyboard would
+function display(word, contextBefore) {
+  if (word === 'i' || /^i'/.test(word)) return 'I' + word.slice(1);
+  return atSentenceStart(contextBefore) ? word.charAt(0).toUpperCase() + word.slice(1) : word;
+}
+
+// text before the word being typed, and the partial word itself
+function splitPartial(text) {
+  const m = /\S+$/.exec(text);
+  return m && !/\s$/.test(text) ? [text.slice(0, m.index), m[0]] : [text, ''];
+}
+
+/* ---------------- keyboard ---------------- */
 
 function renderKeys() {
   keysEl.innerHTML = '';
@@ -55,6 +77,17 @@ function renderKeys() {
   });
 }
 
+function setShift(on) {
+  if (shift === on) return;
+  shift = on;
+  if (!numbers) renderKeys();
+}
+
+// iOS-style auto-capitalisation at the start of a sentence
+function autoShift() {
+  if (!manualShift) setShift(atSentenceStart(beforeCaret()));
+}
+
 function insert(str) {
   const s = textEl.selectionStart, e = textEl.selectionEnd, v = textEl.value;
   textEl.value = v.slice(0, s) + str + v.slice(e);
@@ -75,7 +108,7 @@ function pressKey(k, btn) {
     setTimeout(() => btn.classList.remove('pressed'), 110);
   }
   switch (k) {
-    case 'SHIFT': shift = !shift; renderKeys(); return;
+    case 'SHIFT': manualShift = !shift; shift = !shift; renderKeys(); return;
     case 'BACK': backspace(); return;
     case '123': numbers = true; renderKeys(); return;
     case 'ABC': numbers = false; renderKeys(); return;
@@ -83,8 +116,8 @@ function pressKey(k, btn) {
     case 'SPACE': insert(' '); return;
     case 'RETURN': send(); return;
     default:
+      manualShift = false;
       insert(shift ? k.toUpperCase() : k);
-      if (shift) { shift = false; renderKeys(); }
   }
 }
 
@@ -95,24 +128,45 @@ keysEl.addEventListener('pointerdown', e => {
   pressKey(b.dataset.k, b);
 });
 
+/* ---------------- input box ---------------- */
+
 function autosize() {
   textEl.style.height = 'auto';
   textEl.style.height = Math.min(textEl.scrollHeight, 108) + 'px';
   inputWrap.classList.toggle('has-text', textEl.value.trim().length > 0);
   // keep the caret visible once the box hits its max height and starts scrolling
-  if (textEl.selectionEnd === textEl.value.length) textEl.scrollTop = textEl.scrollHeight;
+  if (caretAtEnd()) textEl.scrollTop = textEl.scrollHeight;
 }
 
 function onChange() {
   autosize();
+  autoShift();
+  renderGhost(null);           // hide stale ghost text until fresh suggestions arrive
   clearTimeout(timer);
-  timer = setTimeout(fetchSuggestions, 70);
+  timer = setTimeout(fetchSuggestions, 60);
 }
-textEl.addEventListener('input', onChange);
+textEl.addEventListener('input', () => { manualShift = false; onChange(); });
+textEl.addEventListener('scroll', () => { ghostEl.scrollTop = textEl.scrollTop; });
+
+// grey inline completion after the caret, like iOS predictive text
+function renderGhost(top) {
+  const text = textEl.value;
+  let rest = '';
+  if (top && caretAtEnd() && text.trim()) {
+    const [ctx, partial] = splitPartial(text);
+    const word = display(top.word, ctx);
+    if (partial) rest = word.toLowerCase().startsWith(partial.toLowerCase()) ? word.slice(partial.length) : '';
+    else rest = word;
+  }
+  ghostEl.innerHTML = rest ? `<span class="typed">${escapeHtml(text)}</span><span class="rest">${escapeHtml(rest)}</span>` : '';
+  ghostEl.scrollTop = textEl.scrollTop;
+}
+
+/* ---------------- suggestions ---------------- */
 
 async function fetchSuggestions() {
   const id = ++reqId;
-  const text = textEl.value.slice(0, textEl.selectionStart);
+  const text = beforeCaret();
   if (!text.trim()) { showSuggestions({ partial: '', suggestions: [] }); return; }
   try {
     const res = await fetch('/predict', {
@@ -128,8 +182,10 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-function showSuggestions({ partial, suggestions }) {
-  current = suggestions;
+function showSuggestions(data) {
+  current = data;
+  const { suggestions } = data;
+  const [ctx, partial] = splitPartial(beforeCaret());
   const max = suggestions.length ? suggestions[0].score : 1;
   for (const btn of suggBtns) {
     const s = suggestions[+btn.dataset.i];
@@ -137,49 +193,88 @@ function showSuggestions({ partial, suggestions }) {
     btn.classList.toggle('empty', !s);
     btn.classList.remove('fade'); void btn.offsetWidth; btn.classList.add('fade');
     if (!s) { w.innerHTML = ''; bar.style.width = '0'; btn.title = ''; continue; }
-    const p = partial && s.word.startsWith(partial) ? partial.length : 0;
-    w.innerHTML = `<b>${escapeHtml(s.word.slice(0, p))}</b>${escapeHtml(s.word.slice(p))}`;
+    const word = display(s.word, ctx);
+    const p = partial && word.toLowerCase().startsWith(partial.toLowerCase()) ? partial.length : 0;
+    w.innerHTML = `<b>${escapeHtml(word.slice(0, p))}</b>${escapeHtml(word.slice(p))}`;
     bar.style.width = Math.max(8, (s.score / max) * 100) + '%';
     btn.title = `${(s.score * 100).toFixed(1)}% confidence`;
   }
+  renderGhost(suggestions[0]);
 }
 
 function accept(i) {
-  const s = current[i];
+  const s = current.suggestions[i];
   if (!s) return;
-  const caret = textEl.selectionStart;
-  const before = textEl.value.slice(0, caret), after = textEl.value.slice(caret);
-  const trimmed = before.replace(/\S+$/, m => (/\s$/.test(before) ? m : ''));
-  const sep = trimmed && !/\s$/.test(trimmed) ? ' ' : '';
-  const newBefore = trimmed + sep + s.word + ' ';
+  const after = textEl.value.slice(textEl.selectionStart);
+  const [ctx] = splitPartial(beforeCaret());
+  const sep = ctx && !/\s$/.test(ctx) ? ' ' : '';
+  const newBefore = ctx + sep + display(s.word, ctx) + ' ';
   textEl.value = newBefore + after;
   textEl.selectionStart = textEl.selectionEnd = newBefore.length;
   textEl.focus();
+  manualShift = false;
   onChange();
 }
 
 suggBtns.forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); accept(+b.dataset.i); }));
 
 textEl.addEventListener('keydown', e => {
-  if (e.key === 'Tab') { e.preventDefault(); accept(0); }
-  else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  if (e.key === 'Tab' || (e.key === 'ArrowRight' && caretAtEnd() && ghostEl.textContent)) {
+    e.preventDefault(); accept(0);
+  } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
 });
 textEl.addEventListener('click', onChange);
 
-function bubble(text, who) {
+/* ---------------- chat ---------------- */
+
+function bubble(who, text, caption) {
   const d = document.createElement('div');
   d.className = 'bubble ' + who;
-  d.textContent = text;
+  if (caption) {
+    const c = document.createElement('span');
+    c.className = 'caption'; c.textContent = caption;
+    d.appendChild(c);
+  }
+  d.appendChild(document.createTextNode(text));
   chatEl.appendChild(d);
   chatEl.scrollTop = chatEl.scrollHeight;
+  return d;
+}
+
+function typing() {
+  const d = document.createElement('div');
+  d.className = 'bubble bot typing';
+  d.innerHTML = '<i></i><i></i><i></i>';
+  chatEl.appendChild(d);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return d;
+}
+
+// the bot replies by letting the LSTM finish your sentence
+async function reply(text) {
+  const dots = typing();
+  try {
+    const [res] = await Promise.all([
+      fetch('/continue', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }),
+      new Promise(r => setTimeout(r, 650)),
+    ]);
+    const { words, finished } = await res.json();
+    dots.remove();
+    if (!words.length) return;
+    const ended = atSentenceStart(text + ' ');
+    const out = words.map((w, i) => display(w, i === 0 && ended ? '' : 'x ')).join(' ');
+    bubble('bot', (ended ? '' : '…') + out + (finished ? '.' : '…'),
+           ended ? 'LSTM writes the next sentence' : 'LSTM would finish it');
+  } catch (err) { dots.remove(); console.error(err); }
 }
 
 function send() {
   const v = textEl.value.trim();
   if (!v) return;
-  bubble(v, 'me');
+  bubble('me', v);
   textEl.value = '';
   onChange();
+  reply(v);
 }
 document.getElementById('send').addEventListener('click', send);
 
@@ -189,6 +284,8 @@ document.querySelectorAll('.tryme button[data-text]').forEach(b => b.addEventLis
   textEl.selectionStart = textEl.selectionEnd = textEl.value.length;
   onChange();
 }));
+
+/* ---------------- chrome ---------------- */
 
 function tick() {
   const d = new Date();
@@ -212,4 +309,5 @@ function fit() {
 }
 window.addEventListener('resize', fit);
 fit();
+autoShift();
 renderKeys();
