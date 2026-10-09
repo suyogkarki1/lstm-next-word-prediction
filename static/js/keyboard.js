@@ -2,6 +2,7 @@ const textEl = document.getElementById('text');
 const chatEl = document.getElementById('chat');
 const keysEl = document.getElementById('keys');
 const suggBtns = [...document.querySelectorAll('.sugg')];
+const inputWrap = document.querySelector('.input-wrap');
 
 let shift = false, numbers = false, current = [], reqId = 0, timer = null;
 
@@ -20,18 +21,25 @@ const LAYOUTS = {
   ],
 };
 
+const ICONS = {
+  shift: '<svg width="20" height="19" viewBox="0 0 20 19"><path d="M10 1.5 1.5 10H6v7h8v-7h4.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+  shiftOn: '<svg width="20" height="19" viewBox="0 0 20 19"><path d="M10 1.5 1.5 10H6v7h8v-7h4.5z" fill="currentColor"/></svg>',
+  back: '<svg width="25" height="18" viewBox="0 0 25 18"><path d="M8 1.5h14a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H8L1.5 9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m11.5 5.5 7 7m0-7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+};
+
 function renderKeys() {
   keysEl.innerHTML = '';
-  for (const row of LAYOUTS[numbers ? 'numbers' : 'letters']) {
+  LAYOUTS[numbers ? 'numbers' : 'letters'].forEach((row, ri) => {
     const r = document.createElement('div');
-    r.className = 'row';
+    r.className = 'row' + (!numbers && ri === 1 ? ' mid' : '');
     for (const k of row) {
       const b = document.createElement('button');
       b.className = 'key';
       b.dataset.k = k;
-      if (k === 'SHIFT') { b.classList.add('mod'); if (shift) b.classList.add('on'); b.textContent = '⇧'; }
-      else if (k === 'BACK') { b.classList.add('mod'); b.textContent = '⌫'; }
-      else if (k === '123' || k === 'ABC' || k === '#+=') { b.classList.add('mod', 'wide'); b.textContent = k; }
+      if (k === 'SHIFT') { b.classList.add('mod', 'gap-r'); if (shift) b.classList.add('on'); b.innerHTML = shift ? ICONS.shiftOn : ICONS.shift; }
+      else if (k === '#+=') { b.classList.add('mod', 'gap-r'); b.textContent = k; b.style.fontSize = '15px'; }
+      else if (k === 'BACK') { b.classList.add('mod', 'gap-l'); b.innerHTML = ICONS.back; }
+      else if (k === '123' || k === 'ABC') { b.classList.add('mod', 'wide'); b.textContent = k; }
       else if (k === 'SPACE') { b.classList.add('space'); b.textContent = 'space'; }
       else if (k === 'RETURN') { b.classList.add('ret'); b.textContent = 'send'; }
       else {
@@ -44,7 +52,7 @@ function renderKeys() {
       r.appendChild(b);
     }
     keysEl.appendChild(r);
-  }
+  });
 }
 
 function insert(str) {
@@ -89,7 +97,10 @@ keysEl.addEventListener('pointerdown', e => {
 
 function autosize() {
   textEl.style.height = 'auto';
-  textEl.style.height = Math.min(textEl.scrollHeight, 90) + 'px';
+  textEl.style.height = Math.min(textEl.scrollHeight, 108) + 'px';
+  inputWrap.classList.toggle('has-text', textEl.value.trim().length > 0);
+  // keep the caret visible once the box hits its max height and starts scrolling
+  if (textEl.selectionEnd === textEl.value.length) textEl.scrollTop = textEl.scrollHeight;
 }
 
 function onChange() {
@@ -184,4 +195,21 @@ function tick() {
   document.getElementById('clock').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
 }
 tick(); setInterval(tick, 30000);
+document.getElementById('today').textContent =
+  new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+// scale the iPhone so the whole device always fits inside the window
+const stage = document.getElementById('stage');
+function fit() {
+  const iphone = document.getElementById('iphone');
+  const w = iphone.offsetWidth, h = iphone.offsetHeight;
+  const sideBySide = window.innerWidth > 760;
+  const info = document.querySelector('.info');
+  const gap = parseFloat(getComputedStyle(document.body).columnGap) || 0;
+  const availW = window.innerWidth - 32 - (sideBySide ? info.offsetWidth + gap : 0);
+  const s = Math.min(1, (window.innerHeight - 32) / h, availW / w);
+  stage.style.setProperty('--s', sideBySide ? s.toFixed(4) : 1);
+}
+window.addEventListener('resize', fit);
+fit();
 renderKeys();
