@@ -14,24 +14,6 @@
   <div class="badge"><span class="dot"></span> PyTorch · LSTM · pretrained + fine-tuned</div>
   <h1>NextWord<br><span>Keyboard</span></h1>
   <p>An LSTM pretrained on 1.9M words of English (WikiText-2), then fine-tuned on my own writing. It predicts your next word and completes the one you are typing.</p>
-  {% if metrics %}
-  {% set s = metrics.cross_validation.summary %}
-  <div class="results">
-    <div class="results-head">
-      <span>Top-3 accuracy on unseen sentences</span>
-      <small>{{ metrics.cross_validation.folds }}-fold CV</small>
-    </div>
-    {% for key, label in [('pretrained_ft', 'Pretrained + fine-tuned'), ('pretrained_only', 'Pretrained only'), ('lstm_scratch', 'LSTM, my data only'), ('bigram', 'Bigram baseline')] %}
-    {% set v = s[key].top3_acc.mean * 100 %}
-    <div class="result-row{% if key == 'pretrained_ft' %} best{% endif %}"
-         title="{{ label }}: top-3 {{ '%.1f' % v }}% ± {{ '%.1f' % (s[key].top3_acc.std * 100) }} · perplexity {{ '%.0f' % s[key].perplexity.mean }} · knows {{ '%.0f' % (s[key].vocab_coverage.mean * 100) }}% of test words">
-      <span class="name">{{ label }}</span>
-      <span class="track"><i style="width: {{ '%.1f' % v }}%"></i></span>
-      <span class="val">{{ '%.0f' % v }}%</span>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
   <div class="tryme">
     <div class="label">Try a starter phrase</div>
     <button data-text="I love to ">I love to <em>…</em></button>
