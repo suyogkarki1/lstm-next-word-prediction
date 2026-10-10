@@ -8,6 +8,49 @@ const inputWrap = document.querySelector('.input-wrap');
 let shift = false, manualShift = false, numbers = false;
 let current = { partial: '', suggestions: [] }, reqId = 0, timer = null;
 
+/* ---------------- transport: Flask (fetch) or Streamlit (component messages) ---------------- */
+
+// Streamlit loads custom components in an iframe with ?streamlitUrl=... in the URL
+const IN_STREAMLIT = new URLSearchParams(location.search).has('streamlitUrl');
+const pending = new Map();
+let msgId = 0;
+
+function toStreamlit(type, data = {}) {
+  window.parent.postMessage({ isStreamlitMessage: true, type, ...data }, '*');
+}
+
+if (IN_STREAMLIT) {
+  // Python answers by re-rendering the component with the response in its args
+  window.addEventListener('message', e => {
+    if (e.data?.type !== 'streamlit:render') return;
+    const res = e.data.args?.response;
+    if (res && pending.has(res.id)) {
+      pending.get(res.id)(res.data);
+      pending.delete(res.id);
+    }
+  });
+  toStreamlit('streamlit:componentReady', { apiVersion: 1 });
+  const setHeight = () => toStreamlit('streamlit:setFrameHeight', { height: window.innerWidth > 760 ? 900 : 760 });
+  setHeight();
+  window.addEventListener('resize', setHeight);
+}
+
+// kind: 'predict' (suggestions) or 'continue' (chat reply)
+function api(kind, text) {
+  if (!IN_STREAMLIT) {
+    return fetch('/' + kind, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }),
+    }).then(r => r.json());
+  }
+  const id = ++msgId;
+  return new Promise((resolve, reject) => {
+    pending.set(id, resolve);
+    toStreamlit('streamlit:setComponentValue', { value: { id, kind, text }, dataType: 'json' });
+    // a newer request can supersede this one before Python sees it
+    setTimeout(() => { if (pending.delete(id)) reject(new Error('superseded or timed out')); }, 10000);
+  });
+}
+
 const LAYOUTS = {
   letters: [
     ['q','w','e','r','t','y','u','i','o','p'],
@@ -169,13 +212,9 @@ async function fetchSuggestions() {
   const text = beforeCaret();
   if (!text.trim()) { showSuggestions({ partial: '', suggestions: [] }); return; }
   try {
-    const res = await fetch('/predict', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    const data = await res.json();
+    const data = await api('predict', text);
     if (id === reqId) showSuggestions(data);
-  } catch (err) { console.error(err); }
+  } catch (err) { /* superseded by a newer keystroke */ }
 }
 
 function escapeHtml(s) {
@@ -254,11 +293,7 @@ function typing() {
 async function reply(text) {
   const dots = typing();
   try {
-    const [res] = await Promise.all([
-      fetch('/continue', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }),
-      new Promise(r => setTimeout(r, 650)),
-    ]);
-    const { words, finished } = await res.json();
+    const [{ words, finished }] = await Promise.all([api('continue', text), new Promise(r => setTimeout(r, 650))]);
     dots.remove();
     if (!words.length) return;
     const ended = atSentenceStart(text + ' ');

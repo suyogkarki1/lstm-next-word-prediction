@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request
 
 from nextword.model import Predictor
 
@@ -10,13 +10,14 @@ CHECKPOINT = ROOT / 'artifacts' / 'lstm_next_word.pt'
 if not CHECKPOINT.exists():
     raise SystemExit('No trained model found. Run `python train.py` first.')
 
-app = Flask(__name__)
+# the same frontend/ folder is also used by the Streamlit app (streamlit_app.py)
+app = Flask(__name__, static_folder='frontend', static_url_path='')
 predictor = Predictor(CHECKPOINT)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return app.send_static_file('index.html')
 
 
 @app.route('/predict', methods=['POST'])

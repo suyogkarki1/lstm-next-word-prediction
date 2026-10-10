@@ -69,6 +69,7 @@ Cross-validation answers *"how well does it predict sentences it has never seen?
 
 ```
 LSTM/
+├── streamlit_app.py        # Streamlit app (used for deployment)
 ├── app.py                  # Flask server: page, /predict, /continue
 ├── pretrain.py             # stage 1: WikiText-2 language model
 ├── train.py                # stage 2: fine-tuning + 4-way cross-validation
@@ -80,8 +81,7 @@ LSTM/
 │   ├── pretrained_lstm.pt  # stage 1 model
 │   └── lstm_next_word.pt   # shipped model
 ├── reports/                # metrics.json, pretrain_metrics.json, charts
-├── templates/index.html    # keyboard page
-├── static/                 # css + js
+├── frontend/               # iPhone keyboard UI (html/css/js), shared by both apps
 └── notebooks/LSTM.ipynb    # original exploration notebook
 ```
 
@@ -94,7 +94,8 @@ pip install -r requirements.txt
 
 python pretrain.py   # optional, ~35 min on CPU: the pretrained model is already in artifacts/
 python train.py      # ~12 min: cross-validation + final fine-tuning
-python app.py        # open http://127.0.0.1:5000
+streamlit run streamlit_app.py   # Streamlit version: http://localhost:8501
+python app.py                    # or the Flask version: http://127.0.0.1:5000
 ```
 
 In the UI:
