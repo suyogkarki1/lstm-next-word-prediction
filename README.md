@@ -1,5 +1,7 @@
 # NextWord Keyboard (LSTM)
 
+**Live demo:** https://suyogkarki1-lstm-next-word-prediction-streamlit-app-idno39.streamlit.app/
+
 A personal next-word prediction keyboard. A PyTorch LSTM is **pretrained on general English** (WikiText-2, 1.9M words), then **fine-tuned on my own writing** (CV, projects and an "about me"). It's served through Streamlit (or Flask) to an iPhone-style keyboard with a suggestion bar, grey inline completion, and a chat where the LSTM finishes your sentences.
 
 The training code lives in two notebooks: [`pretrain.ipynb`](pretrain.ipynb) and [`train.ipynb`](train.ipynb). `train.ipynb` is saved with its outputs, so every number, table and chart below can be checked there.
