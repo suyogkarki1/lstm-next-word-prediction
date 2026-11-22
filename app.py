@@ -8,7 +8,7 @@ ROOT = Path(__file__).parent
 CHECKPOINT = ROOT / 'artifacts' / 'lstm_next_word.pt'
 
 if not CHECKPOINT.exists():
-    raise SystemExit('No trained model found. Run `python train.py` first.')
+    raise SystemExit('No trained model found. Run train.ipynb first.')
 
 # the same frontend/ folder is also used by the Streamlit app (streamlit_app.py)
 app = Flask(__name__, static_folder='frontend', static_url_path='')

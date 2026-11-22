@@ -39,7 +39,7 @@ The training curves show overfitting that early stopping catches: validation los
 
 ### Two goals, two training lengths
 
-Cross-validation answers *"how well does it predict sentences it has never seen?"*. That peaks after ~18 fine-tuning epochs, and those epochs produced the table above. But the shipped keyboard should know **my own** sentences well. At 18 epochs it predicts only 57% of my next words, and its chat replies kept looping on frequent phrases ("a new machine learning…" in 5 of 10 replies). At **70 epochs** it predicts 92% of them and replies stay coherent, so the app model is fine-tuned for 70 epochs (`FINAL_EPOCHS` in `train.py`).
+Cross-validation answers *"how well does it predict sentences it has never seen?"*. That peaks after ~18 fine-tuning epochs, and those epochs produced the table above. But the shipped keyboard should know **my own** sentences well. At 18 epochs it predicts only 57% of my next words, and its chat replies kept looping on frequent phrases ("a new machine learning…" in 5 of 10 replies). At **70 epochs** it predicts 92% of them and replies stay coherent, so the app model is fine-tuned for 70 epochs (`FINAL_EPOCHS` in `train.ipynb`).
 
 | Fine-tuning epochs | Next word right on my own text | Most repeated phrase across 10 replies |
 |---|---|---|
@@ -49,12 +49,12 @@ Cross-validation answers *"how well does it predict sentences it has never seen?
 
 ## How it works
 
-**Stage 1: pretraining** (`pretrain.py`)
+**Stage 1: pretraining** (`pretrain.ipynb`)
 - **Data**: WikiText-2 (raw), 1.87M training tokens, downloaded automatically. Vocabulary is the 12,000 most frequent words.
 - **Model**: Embedding(256) → LSTM(256) → Linear, with **tied input/output embeddings** (Press & Wolf, 2017) and dropout 0.3.
 - **Training**: language-model training on the token stream. Batch 64, truncated backprop through time over 35 steps, Adam with a step-decayed learning rate, 4 epochs. WikiText validation perplexity went 425 → 351 → 321 → **305**.
 
-**Stage 2: fine-tuning** (`train.py`)
+**Stage 2: fine-tuning** (`train.ipynb`)
 - **Vocabulary**: the pretrained vocabulary is extended with my words. Known words keep their trained vectors, and new ones start random.
 - **Examples**: every prefix of every sentence becomes one (context → next word) example. Contexts are left-padded to 30 tokens, and the LSTM **skips padding entirely** using packed sequences.
 - **Training**: learning rate 1e-3 (lower than pretraining, so knowledge is adapted rather than overwritten), dropout 0.5, early stopping on a validation slice.
@@ -71,11 +71,10 @@ Cross-validation answers *"how well does it predict sentences it has never seen?
 LSTM/
 ├── streamlit_app.py        # Streamlit app (used for deployment)
 ├── app.py                  # Flask server: page, /predict, /continue
-├── pretrain.py             # stage 1: WikiText-2 language model
-├── train.py                # stage 2: fine-tuning + 4-way cross-validation
+├── pretrain.ipynb          # stage 1: WikiText-2 download + language model
+├── train.ipynb             # stage 2: fine-tuning + 4-way cross-validation
 ├── nextword/
-│   ├── model.py            # tokenizer, LSTM, vocab expansion, Predictor
-│   └── wikitext.py         # WikiText-2 download + preprocessing
+│   └── model.py            # tokenizer, LSTM, vocab expansion, Predictor (used by the apps)
 ├── data/corpus.txt         # personal training text
 ├── artifacts/
 │   ├── pretrained_lstm.pt  # stage 1 model
@@ -92,8 +91,9 @@ python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
 
-python pretrain.py   # optional, ~35 min on CPU: the pretrained model is already in artifacts/
-python train.py      # ~12 min: cross-validation + final fine-tuning
+# run the notebooks from the project root, top to bottom:
+#   pretrain.ipynb   optional, ~35 min on CPU: the pretrained model is already in artifacts/
+#   train.ipynb      ~12 min: cross-validation + final fine-tuning
 streamlit run streamlit_app.py   # Streamlit version: http://localhost:8501
 python app.py                    # or the Flask version: http://127.0.0.1:5000
 ```
