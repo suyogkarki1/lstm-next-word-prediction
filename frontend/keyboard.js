@@ -47,7 +47,7 @@ function api(kind, text) {
     pending.set(id, resolve);
     toStreamlit('streamlit:setComponentValue', { value: { id, kind, text }, dataType: 'json' });
     // a newer request can supersede this one before Python sees it
-    setTimeout(() => { if (pending.delete(id)) reject(new Error('superseded or timed out')); }, 10000);
+    setTimeout(() => { if (pending.delete(id)) reject(new Error('superseded or timed out')); }, kind === 'predict' ? 3000 : 10000);
   });
 }
 
@@ -185,6 +185,7 @@ function onChange() {
   autosize();
   autoShift();
   renderGhost(null);           // hide stale ghost text until fresh suggestions arrive
+  if (current.text !== beforeCaret()) suggBtns.forEach(b => b.classList.add('stale'));
   clearTimeout(timer);
   timer = setTimeout(fetchSuggestions, 60);
 }
@@ -207,22 +208,26 @@ function renderGhost(top) {
 
 /* ---------------- suggestions ---------------- */
 
-async function fetchSuggestions() {
+async function fetchSuggestions(retries = 2) {
   const id = ++reqId;
   const text = beforeCaret();
-  if (!text.trim()) { showSuggestions({ partial: '', suggestions: [] }); return; }
+  if (!text.trim()) { showSuggestions({ partial: '', suggestions: [] }, text); return; }
   try {
     const data = await api('predict', text);
-    if (id === reqId) showSuggestions(data);
-  } catch (err) { /* superseded by a newer keystroke */ }
+    if (id === reqId && text === beforeCaret()) showSuggestions(data, text);
+  } catch (err) {
+    // Streamlit can drop a request when a rerun is superseded: ask again if it is still the latest
+    if (id === reqId && retries > 0) fetchSuggestions(retries - 1);
+  }
 }
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-function showSuggestions(data) {
-  current = data;
+function showSuggestions(data, text) {
+  current = { ...data, text };
+  suggBtns.forEach(b => b.classList.remove('stale'));
   const { suggestions } = data;
   const [ctx, partial] = splitPartial(beforeCaret());
   const max = suggestions.length ? suggestions[0].score : 1;
@@ -242,6 +247,9 @@ function showSuggestions(data) {
 }
 
 function accept(i) {
+  // only accept suggestions made for the text as it is now; otherwise the same
+  // word gets inserted again while fresh suggestions are still on their way
+  if (current.text !== beforeCaret()) return;
   const s = current.suggestions[i];
   if (!s) return;
   const after = textEl.value.slice(textEl.selectionStart);

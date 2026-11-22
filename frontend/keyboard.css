@@ -267,3 +267,6 @@ kbd {
   .header { padding-top: max(12px, env(safe-area-inset-top)); }
   .home-bar { margin-bottom: max(8px, env(safe-area-inset-bottom)); }
 }
+
+/* suggestions waiting for a fresh prediction: dimmed and not tappable */
+.sugg.stale { opacity: 0.35; pointer-events: none; transition: opacity 0.15s; }
