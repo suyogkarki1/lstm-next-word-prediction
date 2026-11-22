@@ -1,6 +1,8 @@
 # NextWord Keyboard (LSTM)
 
-A personal next-word prediction keyboard. A PyTorch LSTM is **pretrained on general English** (WikiText-2, 1.9M words), then **fine-tuned on my own writing** (CV, projects and an "about me"). It's served through Flask to an iPhone-style keyboard with a suggestion bar, grey inline completion, and a chat where the LSTM finishes your sentences.
+A personal next-word prediction keyboard. A PyTorch LSTM is **pretrained on general English** (WikiText-2, 1.9M words), then **fine-tuned on my own writing** (CV, projects and an "about me"). It's served through Streamlit (or Flask) to an iPhone-style keyboard with a suggestion bar, grey inline completion, and a chat where the LSTM finishes your sentences.
+
+The training code lives in two notebooks: [`pretrain.ipynb`](pretrain.ipynb) and [`train.ipynb`](train.ipynb). `train.ipynb` is saved with its outputs, so every number, table and chart below can be checked there.
 
 ![Model comparison](reports/model_comparison.png)
 
@@ -24,6 +26,18 @@ All models are evaluated with **5-fold cross-validation over my personal sentenc
 - **The gain comes from vocabulary and language knowledge.** Trained on my ~100 sentences alone, an LSTM can't beat a bigram: about 27% of test words never appear in training. The pretrained model already knows 90% of them, and fine-tuning teaches it my phrasing.
 - **Either stage alone is not enough.** The pretrained model by itself writes like Wikipedia: "i love to" → *be, the, have*. After fine-tuning: "I love to" → *visit, play, hike*.
 
+**Top-3 accuracy and perplexity in each fold** (from `train.ipynb`):
+
+| Fold | Test words | Pretrained + fine-tuned | Bigram baseline | LSTM, personal data only | Pretrained, no fine-tuning |
+|---|---|---|---|---|---|
+| 1 | 401 | **29.2%** · ppl **77** | 23.4% · ppl 88 | 22.9% · ppl 92 | 16.7% · ppl 446 |
+| 2 | 303 | **30.7%** · ppl 82 | **30.7%** · ppl **71** | 28.1% · ppl 90 | 16.2% · ppl 534 |
+| 3 | 418 | **27.3%** · ppl 97 | 25.6% · ppl 103 | 25.1% · ppl **94** | 15.6% · ppl 470 |
+| 4 | 349 | **31.5%** · ppl **51** | 27.2% · ppl 67 | 24.9% · ppl 63 | 14.9% · ppl 443 |
+| 5 | 385 | **28.3%** · ppl **88** | 24.9% · ppl 94 | 23.9% · ppl 97 | 14.0% · ppl 534 |
+
+Early stopping picked the best fine-tuning epoch at 19, 13, 18, 15 and 18 across the folds (median 18).
+
 ![Training curves](reports/loss_curve.png)
 
 The training curves show overfitting that early stopping catches: validation loss bottoms out while training loss keeps falling. The two panels' loss values are not directly comparable. The personal-only model's loss skips the ~27% of words outside its small vocabulary, while the fine-tuned model is scored on nearly all of them.
@@ -33,9 +47,13 @@ The training curves show overfitting that early stopping catches: validation los
 | You type | Suggestions | Chat reply (LSTM continues) |
 |---|---|---|
 | `I love to` | visit · play · code | …visit new places in the mountains walk through… |
+| `I love to play` | football · table · with | …football with my friends on weekends and i… |
+| `I love to visit the` | mountains · quick · new | …mountains whenever i get the chance. |
+| `In my free time I` | love · enjoy · have | …love to code play football after a long… |
 | `Snooker is a game of` | patience · my · a | …patience focus and planning. |
-| `I am currently learning` | natural · my · identified | …natural language processing and transformers. |
+| `Hiking clears my` | mind · my · live | …mind and the mountains remind me how big… |
 | `I built a diabetes risk` | predictor · against · for | …predictor for women using python pandas numpy matplotlib… |
+| `I am currently learning` | natural · my · identified | …natural language processing and transformers. |
 
 ### Two goals, two training lengths
 
